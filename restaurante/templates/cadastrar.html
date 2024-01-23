@@ -1,0 +1,59 @@
+{% extends 'menu.html' %}
+{% block conteudo %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adote Refeições</title>
+    {% load static %}
+    <link href="{% static '../static/css/cadastrar.css' %}" rel="stylesheet">
+</head>
+
+<body>
+	<div class="geral">
+		<form id="userForm" method="post">
+            {% csrf_token %}
+            <h2>Registrar usuário</h2>
+            <label for="tipo_acesso">Tipo de conta: <span style="color: red;">*</span></label>
+            <select id="tipo_acesso" style="color: black; background-color: #ffffff;" name="tipo_acesso" required>
+                <option value="colaborador">Colaborador</option>
+                <option value="admin">Admininistrador</option>
+            </select>
+
+            <label for="matricula">Matrícula (login): <span style="color: red;"></span></label>
+            <input style="background-color: #ffffff; border-color: black; color: black;" maxlength="7" type="text" id="matricula" name="matricula" required oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+
+            <label for="cpf">CPF (login): <span style="color: red;">*</span></label>
+            <input style="background-color: #ffffff; color: black;" type="text" id="cpf" name="cpf" maxlength="11" required oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+
+            <label for="nome">Nome: <span style="color: red;">*</span></label>
+            <input style="background-color: #ffffff; color: black;" type="text" id="nome" name="nome" required>
+
+            <label for="senha">Senha: </label>
+            <input style="background-color: #ffffff; color: black;" type="text" id="senha" name="senha">
+
+            <!-- <label for="idrest">ID e Restaurante: <span style="color: red;">*</span></label>
+            <input style="background-color: #ffffff; color: black;" type="text" id="idrest" name="idrest" required> -->
+            
+            <label for="centroCusto">Centro de custo: <span style="color: red;">*</span></label>
+            <select id="centroCusto" style="color: black; background-color: #ffffff;" name="centroCusto" required>
+                <option value="Remodelação">Remodelação</option>
+                <option value="Manutenção">Manutenção</option>
+                <option value="VLI">VLI</option>
+                <option value="COFCO">COFCO</option>
+            </select>
+            
+            <label for="status">Status da conta: <span style="color: red;">*</span></label>
+            <select id="status" style="color: black; background-color: #ffffff;" name="status" required>
+                <option value="Ativo">Ativado</option>
+                <option value="Desativo">Desativado</option>
+            </select>
+            <button type="submit">Cadastrar Usuário</button>
+        </form>
+	</div>
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends 'menu.html' %}
+{% block conteudo %}
+{% load widget_tweaks %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adote Refeições</title>
+    {% load static %}
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"> -->
+    <link href="{% static '../static/css/usuarios.css' %}" rel="stylesheet">
+</head>
+
+<body>
+    <div class="geral" style="margin-top: 40px; margin-left: 30px;">
+        <h2 style="margin-top: 10px;">Lista de Usuários Cadastrados</h2>
+
+        <div class="filtro">
+        <div class="linha-superior">
+            <div class="filtro-item">
+                <label for="filtro-matricula"></label>
+                <input type="text" id="filtro-matricula" placeholder="Matrícula">
+            </div>
+            <div class="filtro-item">
+                <label for="filtro-cpf"></label>
+                <input type="text" id="filtro-cpf" placeholder="CPF">
+            </div>
+            <div class="filtro-item">
+            <label for="filtro-nome"></label>
+            <input type="text" id="filtro-nome" placeholder="Nome">
+        </div>
+        </div>
+    </div>               
+        
+        
+        <table class="sua-classe-de-tabela">
+            <thead style="text-align: center;">
+                <tr>
+                    <th style="text-align: center;">Tipo de acesso</th>
+                    <th style="text-align: center;">Matrícula (Login)</th>
+                    <th style="text-align: center;">CPF (Login)</th>
+                    <th style="text-align: center;">Nome</th>
+                    <th style="text-align: center;">Senha</th>
+                    <!-- <th>ID e Restaurante</th> -->
+                    <th style="text-align: center;">Centro de Custo</th>
+                    <th style="text-align: center;">Status</th>
+                    <!-- <th class="button-cell">Editar</th> -->
+                    <th style="text-align: center;">Editar</th>
+                    <th style="text-align: center;">Deletar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for chave, valor in dados.items %}
+                <tr>
+                    <td style="display: none;">{{ chave }}</td>
+                    <td style="text-align: center;">{{ valor.tipo_acesso }}</td>
+                    <td style="text-align: center;">{{ valor.matricula }}</td>
+                    <td style="text-align: center;">{{ valor.cpf }}</td>
+                    <td style="text-align: center;">{{ valor.nome }}</td>
+                    <td style="text-align: center;">{{ valor.senha }}</td>
+                    <!-- <td>{{ valor.idrest }}</td> -->
+                    <td style="text-align: center;">{{ valor.centroCusto }}</td>
+                    <td style="text-align: center;">{{ valor.status }}</td>
+                    <td>
+                        <a href="{% url 'editar_user' tipo_usuario=valor.tipo_acesso %}?chave={{ chave }}&matricula={{ valor.matricula }}&cpf={{ valor.cpf }}&nome={{ valor.nome }}&senha={{ valor.senha }}&centroCusto={{ valor.centroCusto }}&status={{ valor.status }}" class="edit-button">
+                        <button type="submit">Editar</button>
+                        </a>
+                    </td>
+                    <td >
+                    <a href="{% url 'deletar_user' tipo_usuario=valor.tipo_acesso %}?chave={{ chave }}" class="delete-button">
+                    <button type="submit">Deletar</button>
+                    </a>
+                    </td>
+
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+      $('.delete-button').on('click', function(e) {
+          e.preventDefault();
+
+          var matricula = $(this).closest('tr').find('td:eq(1)').text();
+          var nome = $(this).closest('tr').find('td:eq(3)').text();
+
+          var confirmation = confirm("Tem certeza que deseja deletar?\n" + 
+                                   "matricula: " + matricula + "\n" +
+                                   "nome: " + nome);
+                                
+          if (confirmation) {
+              window.location.href = $(this).attr('href');
+          }
+      });
+  });
+</script>
+
+<script>
+    $(document).ready(function() {
+    function realizarFiltro() {
+        var filtroCPF = $('#filtro-cpf').val().toLowerCase(); // Adicionado
+        var filtroMatricula = $('#filtro-matricula').val().toLowerCase(); // Adicionado
+        var filtroNome = $('#filtro-nome').val().toLowerCase(); // Adicionado
+
+        $('tbody tr').each(function() {
+            var linha = $(this);
+            var matricula = linha.find('td:nth-child(3)').text().toLowerCase(); // Adicionado
+            var cpf = linha.find('td:nth-child(4)').text().toLowerCase(); // Adicionado
+            var nome = linha.find('td:nth-child(5)').text().toLowerCase(); // Adicionado
+
+            var cpfPassou = cpf.includes(filtroCPF) || filtroCPF === ''; // Adicionado
+            var matriculaPassou = matricula.includes(filtroMatricula) || filtroMatricula === ''; // Adicionado
+            var nomePassou = nome.includes(filtroNome) || filtroNome === ''; // Adicionado
+
+            if (cpfPassou && matriculaPassou && nomePassou) {
+                linha.show();
+            } else {
+                linha.hide();
+            }
+        });
+    }
+
+    $('#filtro-cpf, #filtro-matricula, #filtro-nome').on('input', function() {
+        realizarFiltro();
+    });
+});
+
+</script>
+
+{% endblock %}

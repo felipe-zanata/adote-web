@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <title>Adote Refeições</title>
+    {% load static %}
+    <link href="{% static '../static/css/checkin.css' %}" rel="stylesheet">
+</head>
+
+<body>
+    <div class="geral">
+        <form id="userForm" method="post">
+            {% csrf_token %}
+            <div >
+            <img style="margin: 0 auto;" class="img-svg" src="{% static 'a.svg' %}" alt="a">
+            <h2 style="margin-top: -20px; margin-bottom: 35px; margin-inline: auto;">Adote Refeições<span style="color: red;"></span></h2>
+        </div>
+            <!-- <label for="matricula" style="display: flex;justify-content: center; text-align: center;">Matrícula ou CPF: <span style="color: red;">*</span></label>-->
+            
+            <div class="radio-button-container">
+                <div class="radio-button">
+                    <input type="radio" class="radio-button__input" id="radio4" name="matricula_cpf" value="Matricula" required checked>
+                    <label class="radio-button__label" for="radio4">
+                        <span class="radio-button__custom"></span>
+                        Matrícula
+                    </label>
+                </div>
+                <div class="radio-button">
+                    <input type="radio" class="radio-button__input" id="radio5" name="matricula_cpf" value="CPF" required>
+                    <label class="radio-button__label" for="radio5">
+                        <span class="radio-button__custom"></span>
+                        CPF
+                    </label>
+                </div>
+            </div>
+            <input style="background-color: #ffffff; border-color: black; color: black; width: 450px; text-align: center; margin-bottom: 40px;"
+                   type="text" id="matricula" name="matricula" placeholder="Digite sua matrícula ou CPF" autocomplete="off" autofocus
+                   maxlength="11" inputmode="numeric" required oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+        
+            <label for="Tipo" style="display: flex;justify-content: center; text-align: center;">Tipo de refeição: <span style="color: red;">*</span></label>
+        
+            <div class="radio-button-container">
+                <div class="radio-button">
+                    <input type="radio" class="radio-button__input" id="radio1" name="radio-group" value="Café da manhã" required>
+                    <label class="radio-button__label" for="radio1">
+                        <span class="radio-button__custom"></span>
+                        Café da manhã
+                    </label>
+                </div>
+                <div class="radio-button">
+                    <input type="radio" class="radio-button__input" id="radio2" name="radio-group" value="Almoço" required>
+                    <label class="radio-button__label" for="radio2">
+                        <span class="radio-button__custom"></span>
+                        Almoço
+                    </label>
+                </div>
+                <div class="radio-button" style="justify-content: center">
+                    <input type="radio" class="radio-button__input" id="radio3" name="radio-group" value="Jantar" required>
+                    <label class="radio-button__label" for="radio3">
+                        <span class="radio-button__custom"></span>
+                        Jantar
+                    </label>
+                </div>
+            </div>
+            <button type="submit" style="margin-left: 170px ;">Fazer Check-in</button>
+              </div>
+              {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li class="{% if message.tags == 'success' %}success-message{% elif message.tags == 'error' %}error-message{% endif %}">
+                        {{ message }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+        </form>
+    </div>
+
+    <div class="tabela-checkin-container">
+        <h2>Últimos check-in</h2>
+        <table class="tabela-checkin">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Nome</th>
+                    <th>Tipo de refeição</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for chave, valor in dados.items %}
+                {% if forloop.counter <= 3 %}
+                    <tr>
+                        <td>{{ valor.data_hora_checkin }}</td>
+                        <td>{{ valor.nome }}</td>
+                        <td>{{ valor.checkin }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div style="align-content: center; text-align: center; color: rgb(0, 0, 0);">
+        <br>
+          <p style="color: rgb(165, 164, 164); font-size: 14px; color: rgb(0, 0, 0);">&copy; 2023 Desenvolvido por: Pycraft Studio<br> Todos os direitos reservados.</p>
+          <p style="color: rgb(165, 164, 164); font-size: 14px; color: rgb(0, 0, 0);" >Suporte<br> Geovanne: (11) 95284-2140</p>
+      </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+
+<script>
+    // Obter o horário atual
+    var now = new Date();
+    var hours = now.getHours();
+
+    // Selecionar automaticamente a opção de refeição com base no horário
+    if (hours >= 5 && hours < 11) { // Café da manhã (6:00 AM - 11:59 AM)
+        document.getElementById("radio1").checked = true;
+    } else if (hours >= 11 && hours < 16) { // Almoço (12:00 PM - 4:59 PM)
+        document.getElementById("radio2").checked = true;
+    } else { // Jantar (a partir de 5:00 PM)
+        document.getElementById("radio3").checked = true;
+    }
+
+</script>
+
+
+<!-- <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const matriculaInput = document.getElementById("matricula");
+        const radioButtons = document.querySelectorAll(".radio-button__input");
+        
+        matriculaInput.addEventListener("change", function () {
+            const matriculaValue = matriculaInput.value;
+            console.log(dados)
+            // Certifique-se de que dados.items esteja disponível no escopo global ou no escopo onde este script seja executado
+            if (typeof dados !== 'undefined' && dados.hasOwnProperty('items')) {
+                const dadosItems = dados.items;
+
+                // Função para verificar se a matrícula está presente e corresponde aos botões
+                function shouldDisableRadioButtons(matricula, checkinValue) {
+                    // Itera pelos valores dos dados e verifica se a matrícula corresponde e o checkinValue está presente
+                    for (const chave in dadosItems) {
+                        const valor = dadosItems[chave];
+                        if (valor.matricula === matricula && valor.checkin === checkinValue) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+                radioButtons.forEach(function (radioButton) {
+                    console.log(radioButton)
+                    if (shouldDisableRadioButtons(matriculaValue, radioButton.value)) {
+                        radioButton.disabled = true;
+                    } else {
+                        radioButton.disabled = false;
+                    }
+                });
+            } else {
+                console.log('dados.items não está definido ou não possui a propriedade "items"');
+            }
+        });
+    }); -->
+</script>
+<script>
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == "success" %}
+                var successAudio = new Audio("{% static 'sucesso.mp3' %}");
+                successAudio.play();
+            {% elif message.tags == "error" %}
+                var errorAudio = new Audio("{% static 'erro.mp3' %}");
+                errorAudio.play();
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</script>

@@ -1,0 +1,203 @@
+{% extends 'menu.html' %}
+{% block conteudo %}
+{% load widget_tweaks %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Adote Refeições</title>
+    {% load static %}
+    <link href="{% static '../static/css/relatorio.css' %}" rel="stylesheet">
+
+</head>
+
+<body>
+    <div class="geral" style="margin-left: 30px;">
+
+        <div style="flex-direction: column;">
+            <h2 style="margin-top: 10px; color: black;">Relatórios</h2>
+            <button id="exportButton" style="margin-bottom: 15px; margin-left: 205px;" type="button">Exportar CSV</button>
+            <a href="{% url 'deletar_hist' tipo='delete' %}" class="deletar-tudo">
+                <button id="deletar-tudo" style="margin-bottom: 15px; margin-left: 10px;" type="submit" name="deletar-tudo">Deletar Histórico</button>
+            </a>
+            <div class="filtro">
+                <div style="padding: 13px;" class="linha-superior">
+                    <div class="filtro-item">
+                        <input type="text" id="filtro-data" placeholder="Data">
+                    </div>
+                    <div class="filtro-item">
+                        <input type="text" id="filtro-checkin" placeholder="Checkin">
+                    </div>
+                    <div class="filtro-item">
+                        <input type="text" id="filtro-matricula-cpf" placeholder="Matrícula/CPF">
+                    </div>
+                </div>
+                <div class="linha-inferior">
+                    <div class="filtro-item">
+                        <input type="text" id="filtro-nome" placeholder="Nome" style="margin-bottom: 20px;">
+                    </div>
+                    <div class="filtro-item">
+                        <input type="text" id="filtro-centro-custo" placeholder="Centro de Custo" style="margin-bottom: 20px;">
+                    </div>
+                </div>
+            </div>            
+
+        </div>
+        <table class="sua-classe-de-tabela" id="tabela">
+            <thead>
+                <tr>
+                    <th style="text-align: center;">Data</th>
+                    <th style="text-align: center;">Checkin</th>
+                    <th style="text-align: center;">Matrícula/CPF</th>
+                    <th style="text-align: center;">Nome</th>
+                    <!-- <th>ID</th> -->
+                    <th style="text-align: center;">Centro de Custo</th>
+                    <th style="text-align: center;">Ação</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for chave, valor in dados.items %}
+                <tr>
+                    <td style="text-align: center;">{{ valor.data_hora_checkin }}</td>
+                    <!-- <td>a</td> -->
+                    <td style="text-align: center;">{{ valor.checkin }}</td>
+                    <td style="text-align: center;">{{ valor.matricula }}</td>
+                    <td style="text-align: center;">{{ valor.nome }}</td>
+                    <!-- <td>{{ valor.idrest }}</td> -->
+                    <td style="text-align: center;">{{ valor.centroCusto }}</td>
+                    <td>
+                        <a href="{% url 'deletar_atividade' id=chave valor=valor.checkin %}" class="delete-link">
+                          <i class="fa fa-trash"></i>
+                        </a>
+                    </td>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('.deletar-tudo').on('click', function(e) {
+            e.preventDefault();
+    
+            var confirmation = confirm("Tem certeza que deseja deletar\n todo o histórico?");
+                                  
+            if (confirmation) {
+                window.location.href = $(this).attr('href');
+            }
+        });
+    });
+  </script>
+
+<script>
+    $(document).ready(function() {
+        $('.delete-link').on('click', function(e) {
+            e.preventDefault();
+    
+            var confirmation = confirm("Tem certeza que deseja deletar?");
+                                  
+            if (confirmation) {
+                console.log($(this).attr('href'))
+                window.location.href = $(this).attr('href');
+            }
+        });
+    });
+  </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var exportButton = document.getElementById("exportButton");
+        if (exportButton) {
+            exportButton.addEventListener("click", function () {
+                var csvData = Papa.unparse(
+                    getTableData(),
+                    { delimiter: ";" }
+                );
+                var csvDataWithBOM = "\uFEFF" + csvData;
+                var blob = new Blob([csvDataWithBOM], { type: "text/csv;charset=utf-8;" });
+                var link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = "Check-in-relatorio.csv";
+                link.style.display = "none";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        } else {
+            console.error("Elemento não encontrado. Verifique o ID do elemento e o carregamento do script.");
+        }
+    });
+
+    function getTableData() {
+        var data = [];
+        var table = document.getElementById('tabela');
+        var rows = table.querySelectorAll("tbody tr");
+
+        var columnTitles = ["Data", "Checkin", "Matrícula/CPF", "Nome", "Centro de Custo"];
+        data.push(columnTitles);
+
+        rows.forEach(function (row) {
+            var rowData = [];
+            row.querySelectorAll("td").forEach(function (cell) {
+                rowData.push(cell.innerText);
+            });
+            data.push(rowData);
+        });
+
+        return data;
+    }
+</script>
+
+<script>
+    $(document).ready(function() {
+        function realizarFiltro() {
+            var filtroData = $('#filtro-data').val().toLowerCase();
+            var filtroCheckin = $('#filtro-checkin').val().toLowerCase();
+            var filtroMatriculaCPF = $('#filtro-matricula-cpf').val().toLowerCase();
+            var filtroNome = $('#filtro-nome').val().toLowerCase();
+            var filtroCentroCusto = $('#filtro-centro-custo').val().toLowerCase();
+    
+            $('tbody tr').each(function() {
+                var linha = $(this);
+                var data = linha.find('td:nth-child(1)').text().toLowerCase();
+                var checkin = linha.find('td:nth-child(2)').text().toLowerCase();
+                var matriculaCPF = linha.find('td:nth-child(3)').text().toLowerCase();
+                var nome = linha.find('td:nth-child(4)').text().toLowerCase();
+                var centroCusto = linha.find('td:nth-child(5)').text().toLowerCase();
+    
+                var dataPassou = data.includes(filtroData) || filtroData === '';
+                var checkinPassou = checkin.includes(filtroCheckin) || filtroCheckin === '';
+                var matriculaCPFPassou = matriculaCPF.includes(filtroMatriculaCPF) || filtroMatriculaCPF === '';
+                var nomePassou = nome.includes(filtroNome) || filtroNome === '';
+                var centroCustoPassou = centroCusto.includes(filtroCentroCusto) || filtroCentroCusto === '';
+    
+                if (dataPassou && checkinPassou && matriculaCPFPassou && nomePassou && centroCustoPassou) {
+                    linha.show();
+                } else {
+                    linha.hide();
+                }
+            });
+        }
+    
+        $('#filtro-data, #filtro-checkin, #filtro-matricula-cpf, #filtro-nome, #filtro-centro-custo').on('input', function() {
+            realizarFiltro();
+        });
+    });
+    </script>
+
+
+
+{% endblock %}

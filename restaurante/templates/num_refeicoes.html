@@ -1,0 +1,128 @@
+{% extends 'menu.html' %}
+{% block conteudo %}
+{% load widget_tweaks %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adote Refeições</title>
+    {% load static %}
+    <link href="{% static '../static/css/num_refeicoes.css' %}" rel="stylesheet">
+</head>
+
+<body>
+    <div class="geral" style="margin-left: 30px;">
+        <div style="flex-direction: column;">
+            <h2 style="margin-top: 10px; color: black;">Relatórios</h2>
+            <div class="filtro">
+              <div style="justify-content: space-evenly;" class="linha-superior">
+                <div class="filtro-item">
+                  <input type="text" style="height: 50px;"  id="filtro-data" placeholder="Data">
+                </div>
+                <button id="exportButton" style="margin-bottom: 25px;" type="button">Exportar CSV</button>
+                </div>
+            </div>            
+        </div>
+        <table class="sua-classe-de-tabela" id="tabela">
+          <thead>
+              <tr>
+                  <th style="text-align: center;"> <i class="fa fa-calendar" aria-hidden="true"style="margin-right: 3px;"></i> Data</th>
+                  <th style="text-align: center;"> <i class="fa fa-coffee" aria-hidden="true" style="margin-right: 3px;"></i> Café da manhã </th>
+                  <th style="text-align: center;"> <i class="fa fa-cutlery" aria-hidden="true" style="margin-right: 3px;"></i> Almoço</th>
+                  <th style="text-align: center;"> <i class="fa fa-glass" aria-hidden="true" style="margin-right: 3px;"></i> Jantar</th>
+              </tr>
+          </thead>
+          <tbody>
+            {% for data, dados_refeicoes in dados.contagem.items %}
+              <tr>
+                <td>{{ data }}</td>
+                <td>{{ dados_refeicoes.Café_da_manhã }}</td>
+                <td>{{ dados_refeicoes.Almoço }}</td>
+                <td>{{ dados_refeicoes.Jantar }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+    </table>
+    </div>
+
+</body>
+</html>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var exportButton = document.getElementById("exportButton");
+        if (exportButton) {
+            exportButton.addEventListener("click", function () {
+                var csvData = Papa.unparse(
+                    getTableData(),
+                    { delimiter: ";" }
+                );
+                var csvDataWithBOM = "\uFEFF" + csvData;
+                var blob = new Blob([csvDataWithBOM], { type: "text/csv;charset=utf-8;" });
+                var link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = "Check-in-relatorio.csv";
+                link.style.display = "none";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        } else {
+            console.error("Elemento não encontrado. Verifique o ID do elemento e o carregamento do script.");
+        }
+    });
+
+    function getTableData() {
+        var data = [];
+        var table = document.getElementById('tabela');
+        var rows = table.querySelectorAll("tbody tr");
+
+        var columnTitles = ["Data", "Café da manhã", "Almoço", "Jantar"];
+        data.push(columnTitles);
+
+        rows.forEach(function (row) {
+            var rowData = [];
+            row.querySelectorAll("td").forEach(function (cell) {
+                rowData.push(cell.innerText);
+            });
+            data.push(rowData);
+        });
+
+        return data;
+    }
+</script>
+
+<script>
+    $(document).ready(function() {
+        function realizarFiltro() {
+            var filtroData = $('#filtro-data').val().toLowerCase();
+    
+            $('tbody tr').each(function() {
+                var linha = $(this);
+                var data = linha.find('td:nth-child(1)').text().toLowerCase();
+    
+                var dataPassou = data.includes(filtroData) || filtroData === '';
+    
+                if (dataPassou) {
+                    linha.show();
+                } else {
+                    linha.hide();
+                }
+            });
+        }
+    
+        $('#filtro-data' ).on('input', function() {
+            realizarFiltro();
+        });
+    });
+    </script>
+
+{% endblock %}

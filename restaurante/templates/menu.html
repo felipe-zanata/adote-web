@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adote Refeições</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+{% load static %}
+<link href="{% static '../static/css/menu.css' %}" rel="stylesheet">
+</head>
+<body>
+	<div class="navigation">
+	<ul>
+			<li class="hover-li" style="margin-top: 60px;">
+					<a href="">
+						<img class="img-svg" src="{% static 'a2.svg' %}" alt="a" style="top: 0; margin-top: 10px;">
+						<span class="title" style="margin-left: 10px;">Adote Refeições</span>
+					</a>
+			</li>
+			<li>
+				<a href="/relatorios/">
+					<span class="icon"><i class="fa fa-comment" aria-hidden="true"></i></span>
+					<span class="title">Relatórios</span>
+				</a>
+			</li>
+			<li>
+				<a href="/num_refeicoes/">
+					<span class="icon"><i class="fa fa-file-word-o" aria-hidden="true"></i></span>
+					<span class="title">Resumo diario</span>
+				</a>
+			</li>
+			<li>
+				<a href="/gerenciar_user/">
+					<span class="icon"><i class="fa fa-user" aria-hidden="true"></i></span>
+					<span class="title">Usuários</span>
+				</a>
+			</li>
+			<li>
+				<a href="/cadastrar_usuario/">
+					<span class="icon"><i class="fa fa-cog" aria-hidden="true"></i></span>
+					<span class="title">Cadastrar Usuário</span>
+				</a>
+			</li>
+			<li>
+				<a href="/login/">
+					<span class="icon"><i class="fa fa-sign-out" aria-hidden="true"></i></span>
+					<span class="title">Sair</span>
+				</a>
+			</li>
+		</ul>
+	</div>
+	<div class="toggle" onclick="toggleMenu();" style="color: white;">
+	</div>
+
+	<div class="content">
+		{% block conteudo %}
+		
+		{% endblock %}
+	</div>
+
+	<div style="align-content: center; text-align: center; color: rgb(0, 0, 0); margin-bottom: 40px;">
+		<br>
+		  <p style="color: rgb(165, 164, 164); font-size: 10px; color: rgb(0, 0, 0);">&copy; 2023 Desenvolvido por: Pycraft Studio<br> Todos os direitos reservados.</p>
+		  <p style="color: rgb(165, 164, 164); font-size: 11px; color: rgb(0, 0, 0);" >Suporte:<br> Geovanne (11) 95284-2140</p>
+	  </div>
+
+	<script type="text/javascript">
+		function toggleMenu(){
+			let navigation = document.querySelector('.navigation');
+			let toggleMenu = document.querySelector('.toggle');
+			navigation.classList.toggle('active');
+			toggleMenu.classList.toggle('active');
+		}
+	</script>
+
+    <!-- <div class="rodape">
+        <footer class="main-footer">
+            <div class="developer">
+                <p class="texto-rodape" style="font-size: 15px; margin-bottom: 10px;">&copy; 2023 Pycraft Studio. Todos os direitos reservados.
+                </p>
+            </div>
+        </footer>	
+    </div> -->
+
+</body>
+</html>
